@@ -21,8 +21,7 @@ function Home() {
 			<div className="sticky top-0 block lg:hidden z-50">
 				<NavigationBarMobile />
 			</div>
-
-			<div className="w-full flex items-center justify-center">
+			<main className="flex flex-grow justify-center items-center w-full">
 				<div
 					className="flex flex-col w-[85%] items-center justify-center gap-6 py-65 bg-cover bg-center bg-no-repeat bg-blend-overlay bg-[#181818] rounded-lg md:py-110 lg:py-68 2xl:py-75"
 					style={{ backgroundImage: `url(${banner})` }}
@@ -36,8 +35,7 @@ function Home() {
 						</h3>
 					</FadeInTextAnimation>
 				</div>
-			</div>
-
+			</main>
 			<Footer />
 		</div>
 	);
