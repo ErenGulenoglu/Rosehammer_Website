@@ -159,11 +159,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
 ]
 CORS_ALLOW_CREDENTIALS = True
-SESSION_COOKIE_SECURE = True      # only sent over HTTPS
-CSRF_COOKIE_SECURE = True         # only sent over HTTPS
 SESSION_COOKIE_HTTPONLY = True    # inaccessible to JS
-CSRF_COOKIE_HTTPONLY = True       # optional, can still allow JS to read it
-SECURE_SSL_REDIRECT = True               # redirect HTTP -> HTTPS
+CSRF_COOKIE_HTTPONLY = True       # optional, can still allow JS to read it              # redirect HTTP -> HTTPS
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # if behind proxy
 SECURE_HSTS_SECONDS = 31536000           # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
@@ -176,6 +173,10 @@ if DEBUG:
     SECURE_SSL_REDIRECT = False
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
+else:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 AUTH_USER_MODEL = "users.User"
 

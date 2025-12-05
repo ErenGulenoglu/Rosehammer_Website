@@ -8,7 +8,7 @@ import { ShoppingCartIcon } from "lucide-react";
 function NavigationBar() {
 	const { user } = useAuth();
 	return (
-		<div className="sticky top-0 flex w-full justify-center items-center py-6 bg-[#0a0a0a]">
+		<div className="sticky top-0 flex w-full h-[10vh] justify-center items-center bg-[#0a0a0a]">
 			<NavigationMenu>
 				<NavigationMenuList className="grid grid-cols-3 items-center justify-center w-full">
 					{/* Left */}
@@ -58,7 +58,7 @@ function NavigationBar() {
 			{user ? (
 				<div className="absolute right-[5%]">
 					<div className="inline-flex justify-between items-center gap-4">
-						<Link to="/#">
+						<Link to="/cart">
 							<Button className="cursor-pointer" variant={"ghost"}>
 								<p>Cart</p> <ShoppingCartIcon />
 							</Button>

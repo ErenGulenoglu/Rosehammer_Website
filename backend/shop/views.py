@@ -1,15 +1,25 @@
+import stripe
+from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from .models import Order, OrderItem, Product
 from .serializers import ProductSerializer
+
+from django.http import HttpResponse
 
 # Create your views here.
 class ProductListView(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [AllowAny]
+
+class ProductDetailAPIView(RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [AllowAny]
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

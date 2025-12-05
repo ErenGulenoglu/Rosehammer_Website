@@ -14,16 +14,17 @@ function Home() {
 	}, []);
 
 	return (
-		<div>
+		<div className="min-h-screen w-full flex flex-col">
 			<div className="sticky top-0 hidden lg:block z-50">
 				<NavigationBar />
 			</div>
 			<div className="sticky top-0 block lg:hidden z-50">
 				<NavigationBarMobile />
 			</div>
-			<main className="flex flex-grow justify-center items-center w-full">
+			<main className="flex justify-center items-center w-full">
 				<div
-					className="flex flex-col w-[85%] items-center justify-center gap-6 py-65 bg-cover bg-center bg-no-repeat bg-blend-overlay bg-[#181818] rounded-lg md:py-110 lg:py-68 2xl:py-75"
+					className="flex flex-col w-[85%] h-[80vh] items-center justify-center gap-6
+	           bg-cover bg-center bg-no-repeat bg-blend-overlay bg-[#181818] rounded-lg"
 					style={{ backgroundImage: `url(${banner})` }}
 				>
 					<FadeInTextAnimation>

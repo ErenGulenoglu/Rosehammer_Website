@@ -18,3 +18,4 @@ tzdata==2025.2
 uvicorn==0.37.0
 whitenoise==6.11.0
 pillow
+stripe

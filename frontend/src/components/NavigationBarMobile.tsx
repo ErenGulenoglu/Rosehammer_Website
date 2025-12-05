@@ -43,7 +43,7 @@ function NavigationBarMobile() {
 											</Link>
 										</div>
 										<div className="grid gap-3">
-											<Link to="/#">
+											<Link to="/cart">
 												<Button className="w-full cursor-pointer" variant="outline">
 													Cart
 												</Button>

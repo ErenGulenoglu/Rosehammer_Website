@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const refreshAccessToken = async (): Promise<string | null> => {
 		try {
 			//console.log(api);
-			const res = await api.post("/users/token/refresh/"); // returns null
+			const res = await api.post("/users/token/refresh/", null, { withCredentials: true });
 
 			const newAccess = res.data.access;
 			return newAccess;

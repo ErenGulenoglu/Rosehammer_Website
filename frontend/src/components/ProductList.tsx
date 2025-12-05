@@ -26,7 +26,7 @@ const ProductList: React.FC = () => {
 	if (products.length === 0) return <p>No products available.</p>;
 
 	return (
-		<div className="product-grid w-full flex flex-wrap items-center justify-center gap-6 p-6">
+		<div className="product-grid w-full flex flex-wrap items-start justify-center gap-6 p-6">
 			{products.map((product) => (
 				<ProductCard key={product.id} product={product} />
 			))}
