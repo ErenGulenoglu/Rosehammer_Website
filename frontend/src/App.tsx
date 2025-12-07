@@ -8,7 +8,7 @@ import VerifyEmail from "./pages/VerifyEmail";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import { AuthProvider } from "./components/AuthContext";
-import { PublicRoute } from "./components/RoutesGuard";
+import { PublicRoute, PrivateRoute } from "./components/RoutesGuard";
 import { ThemeProvider } from "./components/theme-provider";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -24,7 +24,16 @@ function App() {
 							<Routes>
 								<Route path="/" element={<Home />} />
 								<Route path="/lota" element={<LoTA />} />
-								<Route path="/checkout" element={<Checkout />} />
+
+								{/* Private Route */}
+								<Route
+									path="/checkout"
+									element={
+										<PrivateRoute>
+											<Checkout />
+										</PrivateRoute>
+									}
+								/>
 
 								{/* Public Route */}
 								<Route

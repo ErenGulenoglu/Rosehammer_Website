@@ -37,7 +37,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"div">)
 			// ------------------------
 			// 1. Login: backend sets HttpOnly refresh token cookie
 			// ------------------------
-			const signupRes = await api.post(
+			api.post(
 				"/users/signup/",
 				{ first_name: firstName, last_name: lastName, email, password, passwordConfirm }, // everything matches with serialzier names
 				{ withCredentials: true } // important: send/receive cookies

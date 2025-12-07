@@ -195,3 +195,7 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD")
 # print("Django Superuser Email: ", os.getenv("DJANGO_SUPERUSER_EMAIL"))
 # print("Django Superuser Password: ", os.getenv("DJANGO_SUPERUSER_PASSWORD"))
 # print("Django Secret Key: ", os.environ.get("SECRET_KEY"))
+
+PAYPAL_CLIENT_ID = os.getenv("CLIENT_ID")
+PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_SECRET")
+PAYPAL_API_BASE = "https://api-m.sandbox.paypal.com"

@@ -1,4 +1,3 @@
-import React from "react";
 import type { ReactNode } from "react"; // ReactNode = anything React can render (JSX, components, text, etc.)
 import { Navigate } from "react-router-dom"; // Navigate allows redirecting the user
 import { useAuth } from "./AuthContext"; // Our custom hook to access login state
@@ -39,5 +38,6 @@ export const PrivateRoute: React.FC<GuardProps> = ({ children }) => {
 
 	// If the user is logged in, render the children (protected page)
 	// Otherwise, redirect them to "/login"
+	console.log("PrivateRoute user:", user);
 	return user ? <>{children}</> : <Navigate to="/login" replace />;
 };

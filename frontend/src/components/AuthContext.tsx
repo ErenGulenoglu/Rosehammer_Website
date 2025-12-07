@@ -73,7 +73,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		initAuth();
 	}, []);
 
-	return <AuthContext.Provider value={{ user, setUser, loading, refreshAccessToken }}>{children}</AuthContext.Provider>;
+	return <AuthContext.Provider value={{ user, setUser, loading, refreshAccessToken }}>{loading ? <div>Loading Auth...</div> : children}</AuthContext.Provider>;
+	// return <AuthContext.Provider value={{ user, setUser, loading, refreshAccessToken }}>{children}</AuthContext.Provider>;
 };
 
 // ------------------------

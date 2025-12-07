@@ -11,11 +11,11 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ['product']
+        fields = ['id', 'product', 'price_at_purchaase']
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Order
-        fields = ['id', 'firstName', 'lastName', 'email', 'address', 'total_amount', 'created_at', 'items']
+        fields = ['id', 'firstName', 'lastName', 'street_address', 'city', 'state', 'postalCode', 'country', 'total_amount', 'is_paid', 'created_at', 'items']

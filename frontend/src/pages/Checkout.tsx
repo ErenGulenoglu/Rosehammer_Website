@@ -1,97 +1,134 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "@/api";
 import { useCart } from "../context/CartContext";
-import api from "../api";
-import { toast } from "sonner";
-import NavigationBar from "../components/NavigationBar";
-import NavigationBarMobile from "../components/NavigationBarMobile";
-import Footer from "@/components/Footer";
 import { useAuth } from "../components/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-const CheckoutPage: React.FC = () => {
+declare global {
+	interface Window {
+		paypal: any;
+	}
+}
+
+export default function Checkout() {
 	const { cart, clearCart, totalAmount } = useCart();
-	const [address, setAddress] = useState("");
-	const [loading, setLoading] = useState(false);
 	const { user } = useAuth();
+	const navigate = useNavigate();
 
-	const handleCheckout = async () => {
-		if (!address) {
-			toast.error("Please enter your address");
-			return;
-		}
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-		if (cart.length === 0) {
-			toast.error("Your cart is empty");
-			return;
-		}
+	const [form, setForm] = useState({
+		firstName: "",
+		lastName: "",
+		street_address: "",
+		city: "",
+		state: "",
+		postalCode: "",
+		country: "",
+	});
 
-		setLoading(true);
+	// -----------------------------
+	// Load PayPal script once
+	// -----------------------------
+	useEffect(() => {
+		if (!cart.length) return;
 
-		try {
-			const response = await api.post(
-				"/shop/create_order/",
-				{ items: cart, address },
-				{
-					headers: { Authorization: `Bearer ${user?.token}` },
-				}
-			);
-
-			if (response.data.order_id) {
-				toast.success("Order placed successfully!");
-				clearCart();
-				setAddress("");
-			}
-		} catch (error: any) {
-			toast.error(error.response?.data?.detail || "Something went wrong");
-		} finally {
+		const existingScript = document.querySelector("#paypal-sdk");
+		if (existingScript) {
 			setLoading(false);
+			return;
 		}
+
+		const script = document.createElement("script");
+		script.src = `https://www.paypal.com/sdk/js?client-id=${import.meta.env.VITE_PAYPAL_CLIENT_ID}&currency=USD`;
+		script.async = true;
+		script.id = "paypal-sdk";
+		script.onload = () => setLoading(false);
+		document.body.appendChild(script);
+	}, [cart.length]);
+
+	// -----------------------------
+	// Create PayPal order on backend
+	// -----------------------------
+	const createOrderOnServer = async () => {
+		const res = await api.post(
+			"/shop/paypal/create/",
+			{
+				...form,
+				items: cart.map((item) => ({ id: item.id })),
+			},
+			{
+				headers: { Authorization: `Bearer ${user?.token}` },
+			}
+		);
+		return res.data;
 	};
 
+	// -----------------------------
+	// Render PayPal button
+	// -----------------------------
+	useEffect(() => {
+		if (loading || !window.paypal || !cart.length) return;
+
+		window.paypal
+			.Buttons({
+				createOrder: async () => {
+					try {
+						const data = await createOrderOnServer();
+
+						localStorage.setItem("django_order_id", data.django_order_id);
+						localStorage.setItem("paypal_order_id", data.paypal_order_id);
+
+						return data.paypal_order_id;
+					} catch (err: any) {
+						setError("Error creating PayPal order");
+						console.error(err);
+						return "";
+					}
+				},
+				onApprove: async () => {
+					try {
+						const django_order_id = localStorage.getItem("django_order_id");
+						const paypal_order_id = localStorage.getItem("paypal_order_id");
+
+						await api.post("/shop/paypal/capture/", { django_order_id, paypal_order_id }, { headers: { Authorization: `Bearer ${user?.token}` } });
+
+						clearCart();
+						navigate(`/order-success/${django_order_id}`);
+					} catch (err) {
+						setError("Error capturing PayPal order");
+						console.error(err);
+					}
+				},
+				onError: (err: any) => {
+					setError("PayPal error occurred");
+					console.error(err);
+				},
+			})
+			.render("#paypal-button-container");
+	}, [loading, cart, form]);
+
+	// -----------------------------
+	// Render form + PayPal
+	// -----------------------------
 	return (
-		<div className="min-h-screen w-full flex flex-col">
-			<div className="sticky top-0 hidden lg:block z-50">
-				<NavigationBar />
+		<div className="max-w-2xl mx-auto p-4">
+			<h1 className="text-2xl font-bold mb-4">Checkout</h1>
+
+			{error && <p className="text-red-600 mb-4">{error}</p>}
+
+			<div className="flex flex-col gap-2 mb-4">
+				<input placeholder="First Name" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} className="input" />
+				<input placeholder="Last Name" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} className="input" />
+				<input placeholder="Street Address" value={form.street_address} onChange={(e) => setForm({ ...form, street_address: e.target.value })} className="input" />
+				<input placeholder="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="input" />
+				<input placeholder="State" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="input" />
+				<input placeholder="Postal Code" value={form.postalCode} onChange={(e) => setForm({ ...form, postalCode: e.target.value })} className="input" />
+				<input placeholder="Country" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className="input" />
 			</div>
-			<div className="sticky top-0 block lg:hidden z-50">
-				<NavigationBarMobile />
-			</div>
-			<main className="w-[75%] mx-auto p-4">
-				<h1 className="text-2xl font-bold mb-4">Checkout</h1>
 
-				{cart.length === 0 ? (
-					<p>Your cart is empty</p>
-				) : (
-					<>
-						<div className="mb-4">
-							{cart.map((item) => (
-								<div key={item.id} className="flex justify-between items-center border rounded p-4 mb-2">
-									<div className="flex items-center gap-4">
-										<img src={item.image} alt={item.name} className="h-20 object-contain" />
-										<div>
-											<h3 className="font-semibold">{item.name}</h3>
-											<p className="text-sm text-muted-foreground">${parseFloat(item.price).toFixed(2)}</p>
-										</div>
-									</div>
-								</div>
-							))}
-						</div>
-
-						<div className="mb-4 font-semibold text-lg">Total: ${totalAmount.toFixed(2)}</div>
-
-						<div className="mb-4">
-							<label className="block mb-1 font-medium">Address:</label>
-							<textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={3} className="w-full border rounded p-2" />
-						</div>
-
-						<button onClick={handleCheckout} disabled={loading} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50">
-							{loading ? "Placing order..." : "Place Order"}
-						</button>
-					</>
-				)}
-			</main>
-			<Footer />
+			<div id="paypal-button-container" className="mt-4"></div>
 		</div>
 	);
-};
-
-export default CheckoutPage;
+}

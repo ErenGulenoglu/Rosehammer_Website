@@ -8,9 +8,12 @@ import banner from "../assets/oath_of_the_horatii.png";
 
 import FadeInTextAnimation from "@/components/animations/FadeInTextAnimation";
 
+console.log("HOME PAGE RENDERED");
+
 function Home() {
 	useEffect(() => {
 		document.title = "Home | Rosehammer Studios";
+		console.log("HOME PAGE RENDERED");
 	}, []);
 
 	return (
