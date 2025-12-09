@@ -5,7 +5,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from .models import Order, OrderItem, Product
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, CreateOrderSerializer
 from .paypal import create_paypal_order, capture_paypal_order
 
 from django.http import HttpResponse
@@ -79,7 +79,11 @@ def paypal_create_order(request):
     """
     Create an order in Django and a corresponding PayPal order.
     """
-    data = request.data
+    serializer = CreateOrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.validated_data
+
+    # data = request.data
     required_fields = ["firstName", "lastName", "street_address", "city", "state", "postalCode", "country", "items"]
     for field in required_fields:
         if field not in data:
@@ -97,6 +101,15 @@ def paypal_create_order(request):
     paypal_order_id = paypal_data["id"]
 
     # Create Django order (pending payment)
+    print(request.user)
+    print(data["firstName"])
+    print(data["lastName"])
+    print(data["street_address"])
+    print(data["city"])
+    print(data.get("state", ""))
+    print(data["postalCode"])
+    print(data["country"])
+    print()
     order = Order.objects.create(
         user=request.user,
         firstName=data["firstName"],
