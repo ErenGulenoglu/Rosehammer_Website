@@ -1,11 +1,11 @@
-import stripe
 from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
 from .models import Order, OrderItem, Product
-from .serializers import ProductSerializer, CreateOrderSerializer
+from .serializers import ProductSerializer, CreateOrderSerializer, OrderSerializer
 from .paypal import create_paypal_order, capture_paypal_order
 
 from django.http import HttpResponse
@@ -21,6 +21,36 @@ class ProductDetailAPIView(RetrieveAPIView):
     serializer_class = ProductSerializer
     permission_classes = [AllowAny]
 
+class UserOrderListView(ListAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user).order_by("-created_at")
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_order(request, order_id):
+    try:
+        order = Order.objects.get(id=order_id, user=request.user)
+    except Order.DoesNotExist:
+        return Response(
+            {"detail": "Order not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Safety rule: prevent deleting paid orders
+    if order.is_paid:
+        return Response(
+            {"detail": "Paid orders cannot be deleted."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    order.delete()
+    return Response(
+        {"message": "Order deleted successfully."},
+        status=status.HTTP_204_NO_CONTENT
+    )
 
 # @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
@@ -101,15 +131,14 @@ def paypal_create_order(request):
     paypal_order_id = paypal_data["id"]
 
     # Create Django order (pending payment)
-    print(request.user)
-    print(data["firstName"])
-    print(data["lastName"])
-    print(data["street_address"])
-    print(data["city"])
-    print(data.get("state", ""))
-    print(data["postalCode"])
-    print(data["country"])
-    print()
+    # print(request.user)
+    # print(data["firstName"])
+    # print(data["lastName"])
+    # print(data["street_address"])
+    # print(data["city"])
+    # print(data.get("state", ""))
+    # print(data["postalCode"])
+    # print(data["country"])
     order = Order.objects.create(
         user=request.user,
         firstName=data["firstName"],

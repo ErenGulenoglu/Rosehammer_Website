@@ -12,6 +12,7 @@ import { PublicRoute, PrivateRoute } from "./components/RoutesGuard";
 import { ThemeProvider } from "./components/theme-provider";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import Orders from "./pages/Orders";
 import { CartProvider } from "./context/CartContext";
 
 function App() {
@@ -31,6 +32,16 @@ function App() {
 									element={
 										<PrivateRoute>
 											<Checkout />
+										</PrivateRoute>
+									}
+								/>
+
+								{/* Private Route */}
+								<Route
+									path="/orders"
+									element={
+										<PrivateRoute>
+											<Orders />
 										</PrivateRoute>
 									}
 								/>

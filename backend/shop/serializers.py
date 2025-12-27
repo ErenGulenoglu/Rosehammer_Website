@@ -19,7 +19,7 @@ class OrderSerializer(serializers.ModelSerializer): # Reading Only Serializer
 
     class Meta:
         model = Order
-        fields = ['id', 'firstName', 'lastName', 'street_address', 'city', 'state', 'postalCode', 'country', 'total_amount', 'is_paid', 'created_at', 'items']
+        fields = ['id', 'firstName', 'lastName', 'street_address', 'city', 'state', 'postalCode', 'country', 'total_amount', 'is_paid', 'created_at', 'items',]
 
 class CreateOrderSerializer(serializers.Serializer): # Validating Only Serializer
     firstName = serializers.CharField(max_length=100)

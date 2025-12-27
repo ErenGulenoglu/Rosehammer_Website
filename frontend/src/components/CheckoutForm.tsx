@@ -156,8 +156,8 @@ function CheckoutForm() {
 
 			{error && <p className="text-red-600 mb-4">{error}</p>}
 
-			<FieldGroup className="w-[50%]">
-				<div className="inline-flex">
+			<FieldGroup className="w-[80%] lg:w-[60%]">
+				<div className="w-full flex flex-col justify-center items-center gap-4 lg:flex-row lg:justify-between">
 					<Field>
 						<FieldLabel htmlFor="firstName">First Name</FieldLabel>
 						<Input id="firstName" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="John" required />
@@ -168,7 +168,7 @@ function CheckoutForm() {
 						<Input id="lastName" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Doe" required />
 					</Field>
 				</div>
-				<div className="inline-flex">
+				<div className="w-full flex flex-col justify-center items-center gap-4 lg:flex-row lg:justify-between">
 					<Field>
 						<FieldLabel htmlFor="street_address">Street Address</FieldLabel>
 						<Input id="street_address" type="text" value={street_address} onChange={(e) => setStreetAdresss(e.target.value)} placeholder="Water Steet Dr" required />
@@ -178,7 +178,7 @@ function CheckoutForm() {
 						<Input id="city" type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Berlin" required />
 					</Field>
 				</div>
-				<div className="inline-flex">
+				<div className="w-full flex flex-col justify-center items-center gap-4 lg:flex-row lg:justify-between">
 					<Field>
 						<FieldLabel htmlFor="state">State</FieldLabel>
 						<Input id="state" type="text" value={state} onChange={(e) => setState(e.target.value)} placeholder="Alberta" required />

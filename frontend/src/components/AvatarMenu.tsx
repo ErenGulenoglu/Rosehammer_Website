@@ -61,7 +61,7 @@ function AvatarMenu() {
 					</DropdownMenuItem>
 				</DropdownMenuGroup>
 				<DropdownMenuGroup>
-					<Link to="/order-history">
+					<Link to="/orders">
 						<DropdownMenuItem className="cursor-pointer">Order History</DropdownMenuItem>
 					</Link>
 				</DropdownMenuGroup>
