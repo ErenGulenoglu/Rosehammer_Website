@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../components/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 import api from "@/api";
 
 import { Field, FieldGroup, FieldLabel } from "../components/ui/field";
@@ -28,12 +29,29 @@ function CheckoutForm() {
 
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const paypalRendered = useRef(false);
+
+	// useEffect(() => {
+	// 	if (!cart.length) return;
+
+	// 	const existingScript = document.querySelector("#paypal-sdk");
+	// 	if (existingScript) {
+	// 		setLoading(false);
+	// 		return;
+	// 	}
+
+	// 	const script = document.createElement("script");
+	// 	script.src = `https://www.paypal.com/sdk/js?client-id=${import.meta.env.VITE_PAYPAL_CLIENT_ID}&currency=USD`;
+	// 	script.async = true;
+	// 	script.id = "paypal-sdk";
+	// 	script.onload = () => setLoading(false);
+	// 	document.body.appendChild(script);
+	// }, [cart.length]);
 
 	useEffect(() => {
 		if (!cart.length) return;
 
-		const existingScript = document.querySelector("#paypal-sdk");
-		if (existingScript) {
+		if (window.paypal) {
 			setLoading(false);
 			return;
 		}
@@ -41,10 +59,9 @@ function CheckoutForm() {
 		const script = document.createElement("script");
 		script.src = `https://www.paypal.com/sdk/js?client-id=${import.meta.env.VITE_PAYPAL_CLIENT_ID}&currency=USD`;
 		script.async = true;
-		script.id = "paypal-sdk";
 		script.onload = () => setLoading(false);
 		document.body.appendChild(script);
-	}, [cart.length]);
+	}, []);
 
 	const createOrderOnServer = async () => {
 		console.log(firstName, lastName, street_address, city, state, postalCode, country);
@@ -69,7 +86,7 @@ function CheckoutForm() {
 				country: countryValue,
 				items: cart.map((item) => ({ id: item.id })),
 			},
-			{ headers: { Authorization: `Bearer ${user?.token}` } }
+			{ headers: { Authorization: `Bearer ${user?.token}` } },
 		);
 
 		// const res = await api.post(
@@ -93,7 +110,12 @@ function CheckoutForm() {
 	};
 
 	useEffect(() => {
-		if (loading || !window.paypal || !cart.length) return;
+		if (loading || !window.paypal || !cart.length || paypalRendered.current) return;
+
+		const container = document.getElementById("paypal-button-container");
+		if (!container) return;
+
+		paypalRendered.current = true;
 
 		window.paypal
 			.Buttons({
@@ -119,6 +141,7 @@ function CheckoutForm() {
 
 						await api.post("/shop/paypal/capture/", { django_order_id, paypal_order_id }, { headers: { Authorization: `Bearer ${user?.token}` } });
 
+						localStorage.setItem("last_order_items", JSON.stringify(cart));
 						clearCart();
 						navigate(`/order-success/${django_order_id}`);
 					} catch (err: any) {
@@ -134,7 +157,7 @@ function CheckoutForm() {
 				},
 			})
 			.render("#paypal-button-container");
-	}, [loading, cart.length]);
+	}, [loading]);
 
 	return (
 		<div className="w-[75%] flex flex-col gap-4 justify-center items-center lg:w-[%50]">
@@ -195,7 +218,8 @@ function CheckoutForm() {
 				</Field>
 			</FieldGroup>
 
-			<div id="paypal-button-container" className="mt-4"></div>
+			{/* <div id="paypal-button-container" className="mt-4"></div> */}
+			<div id="paypal-button-container" className="mt-4 min-h-[45px]" />
 		</div>
 	);
 }

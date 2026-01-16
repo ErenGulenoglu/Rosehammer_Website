@@ -27,6 +27,15 @@ class UserOrderListView(ListAPIView):
 
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user).order_by("-created_at")
+    
+class UserOrderDetailView(RetrieveAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
+
+    def get_queryset(self):
+        # 🔒 user can ONLY see their own orders
+        return Order.objects.filter(user=self.request.user)
 
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])

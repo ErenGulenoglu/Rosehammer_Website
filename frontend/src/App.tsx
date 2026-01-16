@@ -13,6 +13,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
+import OrderSuccess from "./pages/OrderSuccess";
 import { CartProvider } from "./context/CartContext";
 
 function App() {
@@ -42,6 +43,15 @@ function App() {
 									element={
 										<PrivateRoute>
 											<Orders />
+										</PrivateRoute>
+									}
+								/>
+
+								<Route
+									path="/order-success/:id"
+									element={
+										<PrivateRoute>
+											<OrderSuccess />
 										</PrivateRoute>
 									}
 								/>
